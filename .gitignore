@@ -1,0 +1,6 @@
+.idea/
+venv/
+__pycache__/
+configuration.py
+terminal.glue
+options.txt
