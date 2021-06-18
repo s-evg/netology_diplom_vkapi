@@ -5,3 +5,4 @@ configuration.py
 terminal.glue
 options.txt
 *.zip
+*.json

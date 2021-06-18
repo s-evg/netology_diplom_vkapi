@@ -5,6 +5,7 @@ from yauploader import YaUploader
 from tqdm import tqdm
 from vk import Vk
 import time
+import json
 
 
 HELP = '''
@@ -55,6 +56,19 @@ class BackupPhotoVk:
                 c += 1
 
             print(f'Резервное копирование завершено. Сохранено {c} фотографий.')
+
+
+            photos_info_print = []
+            for info in self.photos_info:
+                info.pop('link')
+                photos_info_print.append(info)
+
+
+            date = time.strftime('%d%m%Y_%H%M%S')
+            file_name = f'photos_info_{date}.json'
+
+            with open(file_name, 'w', encoding='utf-8') as file:
+                json.dump(photos_info_print, file, indent=2)
 
 
 class BackupPhotoOk:
