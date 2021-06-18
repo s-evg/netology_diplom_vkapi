@@ -8,8 +8,11 @@ class YaUploader:
 
     URL = 'https://cloud-api.yandex.net/v1/disk'
     date = time.strftime('%d%m%Y_%H%M%S')
-    main_folder = 'Vk_photo_backup'
-    def __init__(self, token):
+    main_folder = 'backup_photos_social'
+    def __init__(self, token, folder_social_network, user_folder, album_folder):
+        self.folder_social_network = folder_social_network
+        self.user_folder = user_folder
+        self.album_folder = album_folder
         self.token = token
         self.headers = {
             "Accept": "application/json",
@@ -24,14 +27,22 @@ class YaUploader:
 
     def _create_folder(self):
         url = self.URL + '/resources'
-        folder = f'{self.main_folder}'
         headers = self.headers
-        params_main_folder = {'path': folder, 'overwrite': 'true'}
-        requests.put(url=url, headers=headers, params=params_main_folder)
-        params = {'path': f'{folder}/{self.date}', 'overwrite': 'true'}
-        response = requests.put(url=url, headers=headers, params=params)
+        create_folder = [
+        self.main_folder,
+        self.folder_social_network,
+        self.user_folder,
+        self.album_folder,
+        self.date
+        ]
 
-        return f'{folder}/{self.date}'
+        path_to_folder = ''
+        for folder in create_folder:
+            path_to_folder += f'{folder}/'
+            params = {'path': path_to_folder, 'overwrite': 'true'}
+            requests.put(url=url, headers=headers, params=params)
+
+        return path_to_folder
 
     def _path_to_file(self, file_name):
         url = self.URL + '/resources/upload'
@@ -48,17 +59,18 @@ class YaUploader:
         response = requests.put(href, data=open(file_name, 'rb'))
         response.raise_for_status()
         if response.status_code == 201:
-            print(f'Загрузка файла {file_name} в папку {self.folder_name} произведена успешно.')
+            print(
+                f'Загрузка файла {file_name} в папку {self.folder_name} произведена успешно.'
+                )
 
-    def upload_vk_photo(self, file_name, link):
+    def upload_social_network(self, file_name, link):
         url = self.URL + '/resources/upload'
         folder = self._create_folder()
-        # print(folder)
         params = {
-        'path': f'{folder}/{file_name}',
+        'path': f'{folder}{file_name}',
         'url': link
         }
 
         response = requests.post(url=url, params=params, headers=self.headers)
-        if response.status_code == 202:
-            print(f'Загрузка файла {file_name} в папку {folder} произведена успешно.')
+        if response.status_code != 202:
+            print(f'Ошибка на сервере. Код ошибки: {response.status_code}')
