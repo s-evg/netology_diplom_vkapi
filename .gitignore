@@ -3,6 +3,6 @@ venv/
 __pycache__/
 configuration.py
 terminal.glue
-options.txt
+*.txt
 *.zip
 *.json

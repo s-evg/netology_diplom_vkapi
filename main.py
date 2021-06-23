@@ -18,73 +18,51 @@ exit - выход
 '''
 
 
-class BackupPhotoVk:
+def backup_ya(interim, folder_social_network):
 
-    def __init__(self, ya_token, vk_token, version, folder_social_network):
+    if interim is None:
+        pass
+    else:
+        photos_info = interim[0]
+        user_folder = interim[1]
+        album_title = interim[-1]
+        ya_agent = YaUploader(
+            token=ya_token,
+            folder_social_network=folder_social_network,
+            user_folder=user_folder,
+            album_folder=album_title
+            )
 
-        self.vk_agent = Vk(token=vk_token, version=version)
-        interim = self.vk_agent.photos_info()
-        
-        if interim is None:
-            pass
-        else:
-            self.photos_info = interim[0]
-            self.user_folder = interim[1]
-            self.album_title = interim[-1]
-            self.ya_agent = YaUploader(
-                token=ya_token,
-                folder_social_network=folder_social_network,
-                user_folder=self.user_folder,
-                album_folder=self.album_title
+    try:
+        photos_info
+    except AttributeError:
+        print('Произошла ошибка.')
+
+    else:
+        c = 0
+        for photo in tqdm(photos_info):
+            ya_agent.upload_social_network(
+                file_name=photo['file_name'],
+                link=photo['link']
                 )
+            time.sleep(1)
+            c += 1
 
-    def backup(self):
-
-        try:
-            self.photos_info
-        except AttributeError:
-            print('Произошла ошибка.')
-
-        else:
-            c = 0
-            for photo in tqdm(self.photos_info):
-                self.ya_agent.upload_social_network(
-                    file_name=photo['file_name'],
-                    link=photo['link']
-                    )
-                time.sleep(1)
-                c += 1
-
-            print(f'Резервное копирование завершено. Сохранено {c} фотографий.')
+        print(f'Резервное копирование завершено. Сохранено {c} фотографий.')
 
 
-            photos_info_print = []
-            for info in self.photos_info:
-                info.pop('link')
-                photos_info_print.append(info)
+        photos_info_print = []
+        for info in photos_info:
+            info.pop('link')
+            photos_info_print.append(info)
 
 
-            date = time.strftime('%d%m%Y_%H%M%S')
-            file_name = f'photos_info_{date}.json'
+        date = time.strftime('%d%m%Y_%H%M%S')
+        file_name = f'photos_info_{date}.json'
 
-            with open(file_name, 'w', encoding='utf-8') as file:
-                json.dump(photos_info_print, file, indent=2)
+        with open(file_name, 'w', encoding='utf-8') as file:
+            json.dump(photos_info_print, file, indent=2)
 
-
-class BackupPhotoOk:
-
-    def __init__(self):
-        print(
-            'Возможность загрузки из ОК будет реализована в следующих версиях.'
-            )
-
-
-class BackupPhotoInst:
-
-    def __init__(self):
-        print(
-            'Возможность загрузки из Instagram будет реализована в следующих версиях.'
-            )
 
 
 class UserAgent:
@@ -121,21 +99,23 @@ class UserAgent:
 
     def vk(self):
 
-        backup_vk = BackupPhotoVk(
-            ya_token=ya_token,
-            vk_token=vk_token, 
-            version=version,
-            folder_social_network=self.command
-            )
-        backup_vk.backup()
+        vk_agent = Vk(token=vk_token, version=version)
+        interim = vk_agent.photos_info()
+        folder_social_network = self.command
+        backup_ya(interim, folder_social_network)
+
 
     def ok(self):
 
-        BackupPhotoOk()
+        print(
+            'Возможность загрузки из ОК будет реализована в следующих версиях.'
+            )
 
     def inst(self):
 
-        BackupPhotoInst()
+        print(
+            'Возможность загрузки из Instagram будет реализована в следующих версиях.'
+            )
 
 
 if __name__ == '__main__':
