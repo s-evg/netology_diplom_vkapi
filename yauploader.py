@@ -7,7 +7,7 @@ import time
 class YaUploader:
 
     URL = 'https://cloud-api.yandex.net/v1/disk'
-    date = time.strftime('%d-%m-%Y_%H:%M:%S')
+    date = time.strftime('%d-%m-%Y_%H÷%M÷%S')
     main_folder = 'backup_photos_social'
 
     def __init__(self, token, folder_social_network, user_folder, album_folder):
