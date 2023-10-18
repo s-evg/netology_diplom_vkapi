@@ -33,36 +33,33 @@ def backup_ya(interim, folder_social_network):
             album_folder=album_title
             )
 
-    try:
-        photos_info
-    except AttributeError:
-        print('Произошла ошибка.')
+        try:
+            photos_info
+        except AttributeError:
+            print('Произошла ошибка.')
 
-    else:
-        c = 0
-        for photo in tqdm(photos_info):
-            ya_agent.upload_social_network(
-                file_name=photo['file_name'],
-                link=photo['link']
-                )
-            time.sleep(1)
-            c += 1
+        else:
+            c = 0
+            for photo in tqdm(photos_info):
+                ya_agent.upload_social_network(
+                    file_name=photo['file_name'],
+                    link=photo['link']
+                    )
+                time.sleep(1)
+                c += 1
 
-        print(f'Резервное копирование завершено. Сохранено {c} фотографий.')
+            print(f'Резервное копирование завершено. Сохранено {c} фотографий.')
 
+            photos_info_print = []
+            for info in photos_info:
+                info.pop('link')
+                photos_info_print.append(info)
 
-        photos_info_print = []
-        for info in photos_info:
-            info.pop('link')
-            photos_info_print.append(info)
+            date = time.strftime('%d%m%Y_%H%M%S')
+            file_name = f'photos_info_{date}.json'
 
-
-        date = time.strftime('%d%m%Y_%H%M%S')
-        file_name = f'photos_info_{date}.json'
-
-        with open(file_name, 'w', encoding='utf-8') as file:
-            json.dump(photos_info_print, file, indent=2)
-
+            with open(file_name, 'w', encoding='utf-8') as file:
+                json.dump(photos_info_print, file, indent=2)
 
 
 class UserAgent:
@@ -76,7 +73,7 @@ class UserAgent:
         }
 
     def user_input(self):
-
+        """Пользовательский ввод данных в консоль"""
         print(HELP)
         run = True
         while run:
@@ -103,7 +100,6 @@ class UserAgent:
         interim = vk_agent.photos_info()
         folder_social_network = self.command
         backup_ya(interim, folder_social_network)
-
 
     def ok(self):
 

@@ -205,5 +205,4 @@ class Vk:
                         info['file_name'] = f'{like}.jpg'
                         photos_info.append(info)
 
-
             return photos_info, self.user_name, self.album_title
